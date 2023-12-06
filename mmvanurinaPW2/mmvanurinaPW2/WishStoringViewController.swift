@@ -130,36 +130,35 @@ final class WishStoringViewController: UIViewController, UITableViewDelegate, Ad
         }
         
         private func configureUI() {
-            selectionStyle = .none
-            
-            contentView.addSubview(textView)
-            contentView.addSubview(addButton)
-            contentView.isUserInteractionEnabled = true
-            
-            textView.backgroundColor = .lightGray
-            textView.layer.cornerRadius = 8
-            textView.isEditable = true
-            textView.translatesAutoresizingMaskIntoConstraints = false
-            
-            addButton.setTitle("Add Wish", for: .normal)
-            addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-            addButton.translatesAutoresizingMaskIntoConstraints = false
-            addButton.isUserInteractionEnabled = true
-            addButton.backgroundColor = .green
-            
-            addButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-            
-            NSLayoutConstraint.activate([
-                textView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
-                textView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-                textView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-                textView.bottomAnchor.constraint(equalTo: addButton.topAnchor, constant: -8),
-                
-                addButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-                addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-                addButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8)
-            ])
-        }
+                    selectionStyle = .none
+                    contentView.addSubview(textView)
+                    contentView.addSubview(addButton)
+                    
+                    textView.backgroundColor = .lightGray
+                    textView.layer.cornerRadius = 8
+                    textView.isEditable = true
+                    textView.translatesAutoresizingMaskIntoConstraints = false
+                    
+                    addButton.setTitle("Add Wish", for: .normal)
+                    addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+                    addButton.translatesAutoresizingMaskIntoConstraints = false
+                    addButton.isUserInteractionEnabled = true
+                    addButton.backgroundColor = .green
+                    
+                    NSLayoutConstraint.activate([
+                        textView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+                        textView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                        textView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                        textView.heightAnchor.constraint(equalToConstant: 30),
+                        
+                        addButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                        addButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                        addButton.topAnchor.constraint(equalTo: textView.bottomAnchor, constant: 8),
+                        addButton.heightAnchor.constraint(equalToConstant: 30),
+                        
+                        contentView.bottomAnchor.constraint(equalTo: addButton.bottomAnchor, constant: 8)
+                    ])
+                }
         
         @objc private func addButtonTapped() {
             print("Tap")
@@ -193,20 +192,19 @@ extension WishStoringViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
-            let addWishCell = tableView.dequeueReusableCell(withIdentifier: AddWishCell.reuseId, for: indexPath) as! AddWishCell
-            addWishCell.addWish = { [weak self] text in
-                self?.wishArray.append(text)
-                tableView.reloadData()
-            }
-            return addWishCell
-        case 1:
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: AddWishCell.reuseId, for: indexPath) as! AddWishCell
+                    cell.addWish = { [weak self] wishText in
+                        self?.wishArray.append(wishText)
+                        self?.saveWishArray()
+                        tableView.reloadData()
+                    }
+                    
+                    return cell
+                } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: WrittenWishCell.reuseId, for: indexPath) as! WrittenWishCell
             cell.configure(with: wishArray[indexPath.row])
             return cell
-        default:
-            return UITableViewCell()
         }
     }
 }
